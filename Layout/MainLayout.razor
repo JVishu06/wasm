@@ -1,0 +1,97 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+
+<div class="page">
+    <main>
+        <!-- Conditionally render the top row for authorized users but exclude login/register pages -->
+        <AuthorizeView>
+            <Authorized>
+                @if (!IsLoginOrRegisterPage()) 
+                {
+                    <div class="top-row px-4">
+                        <span class="logged-in-text">Logged in as @context.User.Identity?.Name.</span>
+                        <a href="logout">
+                            <span class="bi bi-door-closed-fill" aria-hidden="true" style="vertical-align:middle"></span> Logout
+                        </a>
+                    </div>
+                }
+            </Authorized>
+            <NotAuthorized>
+                @if (!IsLoginOrRegisterPage())  
+                {
+                    <div class="top-row px-4">
+                        <a href="login">
+                            <span class="bi bi-door-open" aria-hidden="true" style="vertical-align:middle"></span> Login
+                        </a>
+                        <a href="register">
+                            <span class="bi bi-pencil-square" aria-hidden="true" style="vertical-align:middle"></span> Register
+                        </a>
+                    </div>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <!-- Main Content Area -->
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<style>
+    /* Fixed Top Row */
+    .top-row {
+        background-image: url('images/cloud.jpg');
+        background-size: cover;
+        background-position: center;
+        position: fixed; /* Keep it fixed at the top */
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000; /* Ensure it's on top */
+        padding: 10px 20px;
+        width: 100%; /* Ensure it spans the full width */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        font-size: 16px;
+    }
+
+    /* Styling the logged-in text */
+    .logged-in-text {
+        color: white;
+    }
+
+    /* Adding some padding to the content area to avoid overlap with the fixed top row */
+    .content {
+        margin-top: 70px; /* Adjust this based on the height of your top-row */
+    }
+
+    /* Optional: Styling the icons for login and register buttons */
+    .bi {
+        font-size: 1.2em;
+        margin-right: 5px;
+    }
+
+    /* For small screens, adjust layout for responsiveness */
+    media (max-width: 768px) {
+        .top-row {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .top-row a {
+            margin-left: 5px;
+        }
+    }
+</style>
+
+@code {
+    // Check if the current page is the login or register page
+    private bool IsLoginOrRegisterPage()
+    {
+        var currentUrl = Navigation.Uri;
+        return currentUrl.Contains("/login") || currentUrl.Contains("/register");
+    }
+}

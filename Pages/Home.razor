@@ -1,0 +1,596 @@
+﻿@page "/"
+@inject WeatherService WeatherService
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Weatherverse</PageTitle>
+
+<h1 class="title">W E A T H E R V E R S E</h1>
+
+<p class="description">
+    Weather Forecast Application allows users to get real-time weather updates for any city of their choice.
+</p>
+
+<div class="search-container">
+    <input @bind="City" @oninput="OnInputChange" placeholder="Enter city" />
+    <button @onclick="GetWeather">Get Weather</button>
+
+    @if (Suggestions.Any())
+
+    {
+        <ul class="suggestions-list">
+            @foreach (var suggestion in Suggestions)
+
+            {
+                <li @onclick="() => SelectSuggestion(suggestion)">
+                    @suggestion
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+<div class="button-container">
+    @foreach (var city in FavoriteCities)
+
+    {
+        <button @onclick="() => OnCityClick(city)">
+            @city
+        </button>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+
+{
+    <p class="error-message">@ErrorMessage</p>
+}
+
+@if (WeatherDataList.Count > 0)
+
+{
+    <table>
+        <thead>
+            <tr>
+                <th>City</th>
+                <th>Temperature (°C)</th>
+                <th>Humidity (%)</th>
+                <th>Pressure (hPa)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var weather in WeatherDataList)
+
+            {
+                <tr>
+                    <td class="city-column">
+                        <button class="favorite-button" @onclick="() => AddToFavorites(weather.Name)">
+                            ⭐
+                        </button>
+                        <span>@weather.Name</span>
+                    </td>
+                    <td>@weather.Main?.Temp</td>
+                    <td>@weather.Main?.Humidity</td>
+                    <td>@weather.Main?.Pressure</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!-- Chatbot Icon -->
+<div class="chatbot-icon" @onclick="ToggleChatbot">
+    <img src="images/chatbot.png" alt="Chatbot Icon" />
+</div>
+
+<!-- Chatbot Panel -->
+@if (IsChatbotOpen)
+
+{
+    <div class="chatbot-panel">
+        <h5>Weather Chatbot</h5>
+        <div class="chatbot-messages">
+            @if (!string.IsNullOrEmpty(response))
+
+            {
+                <div class="chatbot-response">
+                    <strong>Bot:</strong> @response
+                </div>
+            }
+        </div>
+        <input type="text" @bind="userInput" placeholder="Type your message..." />
+        <button @onclick="SendMessage">Send</button>
+        <button class="close-button" @onclick="ToggleChatbot">Close</button>
+    </div>
+}
+
+@code {
+
+
+
+    private string City { get; set; } = string.Empty;
+
+    private List<WeatherResponse> WeatherDataList { get; set; } = new List<WeatherResponse>();
+
+    private List<string> FavoriteCities { get; set; } = new List<string>();
+
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    private List<string> Suggestions { get; set; } = new List<string>();
+
+    private List<string> AllCities { get; set; } = new List<string>();
+
+
+
+    private bool IsChatbotOpen { get; set; } = false;
+
+    private string? userInput;
+
+    private string? response = "Hi, how can I help you?"; // Default response
+
+
+    private async Task OnInputChange(ChangeEventArgs e)
+
+    {
+
+        City = e.Value.ToString();
+
+        if (City.Length >= 1)
+
+        {
+
+            await GetCitySuggestions(City);
+
+        }
+
+        else
+
+        {
+
+            Suggestions.Clear();
+
+        }
+
+    }
+
+
+
+    private async Task GetCitySuggestions(string input)
+
+    {
+
+        try
+
+        {
+
+            if (AllCities.Count == 0)
+
+            {
+
+                AllCities = await Http.GetFromJsonAsync<List<string>>("https://localhost:7195/cities.json");
+
+            }
+
+
+
+            Suggestions = AllCities.Where(city => city.Contains(input, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+            ErrorMessage = $"Error fetching city suggestions: {ex.Message}";
+
+        }
+
+    }
+
+
+
+    private void SelectSuggestion(string suggestion)
+
+    {
+
+        City = suggestion;
+
+        Suggestions.Clear();
+
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+
+    {
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var user = authState.User;
+
+
+
+        if (!user.Identity.IsAuthenticated)
+
+        {
+
+            Navigation.NavigateTo("/login");
+
+            return;
+
+        }
+
+
+
+        try
+
+        {
+
+            FavoriteCities = await WeatherService.GetFavoriteCitiesFromApi();
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+            ErrorMessage = $"Error fetching favorite cities: {ex.Message}";
+
+        }
+
+    }
+
+
+
+    private async Task GetWeather()
+
+    {
+
+        try
+
+        {
+
+            ErrorMessage = string.Empty;
+
+
+
+            if (!string.IsNullOrEmpty(City))
+
+            {
+
+                var weatherResponse = await WeatherService.GetWeatherAsync(City);
+
+
+
+                if (weatherResponse != null && !WeatherDataList.Any(w => w.Name.Equals(weatherResponse.Name, StringComparison.OrdinalIgnoreCase)))
+
+                {
+
+                    WeatherDataList.Insert(0, weatherResponse);
+
+
+
+                    if (WeatherDataList.Count > 4)
+
+                    {
+
+                        WeatherDataList.RemoveAt(WeatherDataList.Count - 1);
+
+                    }
+
+
+
+                    var success = await WeatherService.AddWeatherDataToApi(weatherResponse);
+
+
+
+                    if (!success)
+
+                    {
+
+                        ErrorMessage = "Failed to save weather data to MongoDB.";
+
+                    }
+
+
+
+                    City = string.Empty;
+
+                }
+
+                else
+
+                {
+
+                    ErrorMessage = "Enter a valid city name.";
+
+                }
+
+            }
+
+        }
+
+        catch (Exception)
+
+        {
+
+            ErrorMessage = "Error occurred while fetching or saving weather data.";
+
+        }
+
+    }
+
+
+
+    private async Task AddToFavorites(string cityName)
+
+    {
+
+        var response = await Http.PostAsJsonAsync("api/weather/favorites", cityName);
+
+
+
+        if (response.IsSuccessStatusCode)
+
+        {
+
+            if (!FavoriteCities.Contains(cityName))
+
+            {
+
+                FavoriteCities.Add(cityName);
+
+            }
+
+        }
+
+        else
+
+        {
+
+            ErrorMessage = "Failed to add city to favorites.";
+
+        }
+
+    }
+
+
+
+    private async Task OnCityClick(string city)
+
+    {
+
+        City = city;
+
+        await GetWeather();
+
+    }
+
+
+
+    private void ToggleChatbot()
+
+    {
+
+        IsChatbotOpen = !IsChatbotOpen;
+
+    }
+
+
+
+    private async Task SendMessage()
+
+    {
+
+        if (!string.IsNullOrEmpty(userInput))
+
+        {
+
+            var llm = new OllamaChatbot.Services.OllamaLLM("qwen2.5:0.5b");
+
+
+            llm.SetCustomPrompt("You are a chatbot for Weatherverse, a company focused on weather data analytics provides real-time weather data for the given city name. Below are the key details about the company that should guide your responses: Company Name: Weatherverse, Founder & CEO: Vishwa, Key Weather Metrics of the weatherverse: Temperature (°C), Humidity (%), Pressure (hPa), weatherverse Company is located in Bangalore and weatherverse Headquarters in California, US, Founded Year: 2024, Revenue Increase: US$391.04 billion (FY 2024). Use this information when answering questions about the company, its leadership, location, revenue, or its key weather metrics. Respond clearly and concisely, providing accurate details from the information above.answer in few words");
+
+
+            response = await llm.InvokeAsync(userInput);
+
+            userInput = string.Empty;
+
+        }
+
+    }
+}
+
+
+<style>
+    body {
+        background-image: url('images/deerpurple.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+    }
+
+    .title {
+        font-size: 28px;
+        color: black;
+        text-align: center;
+        margin-bottom: 8px;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .description {
+        font-size: 14px;
+        line-height: 1.4;
+        color: white;
+        text-align: center;
+        margin-bottom: 8px;
+        padding: 0 20px;
+    }
+
+    .search-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    input {
+        padding: 8px;
+        margin: 8px 0;
+        width: 230px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+        padding: 10px 18px;
+        font-size: 14px;
+        color: #fff;
+        background-color: black;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: black;
+    }
+
+    .suggestions-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        background-color: white;
+        position: absolute;
+        top: 38px; 
+        width: 230px;
+        border: 1px solid #ccc;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        max-height: 150px; 
+        overflow-y: auto; 
+    }
+
+    .suggestions-list li {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    .suggestions-list li:hover {
+        background-color: #f0f0f0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        font-size: 14px;
+        text-align: left;
+        border: 1px solid black;
+    }
+
+    th, td {
+        padding: 10px 12px;
+        border: 1px solid black;
+        color: white;
+    }
+
+    th {
+        background-color: black;
+        color: white;
+    }
+
+    tr:hover {
+        color: black;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+    .button-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px; 
+        margin-top: 15px; 
+    }
+
+    .favorite-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 16px; 
+        color: gold;
+    }
+
+        .favorite-button:hover {
+            transform: scale(1.2);
+            background: none;
+            box-shadow: none;
+        }
+
+    .chatbot-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
+        .chatbot-icon img {
+            width: 50px;
+            height: 50px;
+        }
+
+    .chatbot-panel {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        padding: 16px;
+    }
+
+    .chatbot-messages {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+
+    .chatbot-response {
+        margin-bottom: 10px;
+    }
+
+    .chatbot-panel input {
+        width: calc(100% - 20px);
+        padding: 8px;
+        margin-bottom: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .chatbot-panel button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .chatbot-panel .close-button {
+        background-color: red;
+    }
+</style>

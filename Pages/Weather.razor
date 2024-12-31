@@ -1,0 +1,282 @@
+﻿@page "/weather"
+@inject HttpClient Http
+@using Microsoft.AspNetCore.Authorization
+@inject WeatherService WeatherService
+@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "admin")]
+
+<input @bind="City" placeholder="Enter city" />
+<button @onclick="GetWeather">Get Weather</button>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+
+{
+    <p class="error-message">@ErrorMessage</p>
+}
+
+@if (WeatherDataList.Count > 0)
+
+{
+    <h3 class="blue-heading">Weather Data</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>City</th>
+                <th>Temperature (°C)</th>
+                <th>Humidity (%)</th>
+                <th>Pressure (hPa)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var weather in WeatherDataList)
+
+            {
+                <tr>
+                    <td class="city-column">
+                        <button class="favorite-button" @onclick="() => AddToFavorites(weather.Name)">
+                            ⭐
+                        </button>
+                        <span>@weather.Name</span>
+                    </td>
+                    <td>@weather.Main?.Temp</td>
+                    <td>@weather.Main?.Humidity</td>
+                    <td>@weather.Main?.Pressure</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<style>
+    h3, h4 {
+        color: white; /* Blue color */
+        font-size: 24px;
+        margin-bottom: 15px;
+        padding-left: 10px; /* Consistent padding */
+    }
+
+    input {
+        padding: 10px;
+        margin: 10px 0;
+        width: 250px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Set the background image */
+    body {
+        background-image: url('images/deerpurple.jpg'); /* Ensure this path is correct relative to wwwroot */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+        height: 100vh; /* Ensures the background covers the entire viewport */
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 16px;
+        color: #fff;
+        background-color: black;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        button:hover {
+            background-color: black;
+        }
+
+    /* Table styling */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        text-align: left;
+        border: 1px solid black; /* Black border for the table */
+    }
+
+    th, td {
+        padding: 12px 15px;
+        border: 1px solid black; /* Black border for table cells */
+        color: white; /* This makes the table text white */
+    }
+
+    /* Change header background to black */
+    th {
+        background-color: black;
+        color: white;
+    }
+
+
+    /* Hover effect: change background color to white and text color to black */
+    tr:hover {
+        color: black;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+    }
+
+    .city-column {
+        position: relative;
+        text-align: left;
+        padding-left: 50px; /* Extra padding to avoid text overlapping the button */
+    }
+
+    .favorite-button {
+        position: absolute;
+        right: 10px; /* Positioned 20px from the left edge of the column */
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        color: gold;
+        outline: none; /* Ensure no outline is visible */
+    }
+
+        /* Remove the hover effect around the button */
+        .favorite-button:hover {
+            transform: translateY(-50%) scale(1.2);
+            background: none; /* Remove any background color */
+            box-shadow: none; /* Ensure no box shadow appears */
+        }
+
+    /* Styling for favorite city list */
+    h4 {
+        color: #007bff;
+        font-size: 18px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+</style>
+
+@code {
+    private string City { get; set; } = string.Empty;
+
+    private List<WeatherResponse> WeatherDataList { get; set; } = new List<WeatherResponse>();
+
+    private List<string> FavoriteCities { get; set; } = new List<string>();
+
+    private string ErrorMessage { get; set; } = string.Empty;
+
+
+
+    private async Task GetWeather()
+
+    {
+
+        try
+
+        {
+
+            ErrorMessage = string.Empty; // Clear previous error message
+
+
+
+            if (!string.IsNullOrEmpty(City))
+
+            {
+
+                var weatherResponse = await WeatherService.GetWeatherAsync(City);
+
+
+
+                if (weatherResponse != null && !WeatherDataList.Any(w => w.Name.Equals(weatherResponse.Name, StringComparison.OrdinalIgnoreCase)))
+
+                {
+
+                    WeatherDataList.Insert(0, weatherResponse);
+
+
+
+                    // Send data to the Web API for storage in MongoDB
+
+                    var success = await WeatherService.AddWeatherDataToApi(weatherResponse);
+
+
+
+                    if (!success)
+
+                    {
+
+                        ErrorMessage = "Failed to save weather data to MongoDB.";
+
+                    }
+
+
+
+                    City = string.Empty; // Clear input field
+
+                }
+
+                else
+
+                {
+
+                    ErrorMessage = "Enter a valid city name."; // Invalid city
+
+                }
+
+            }
+
+        }
+
+        catch (Exception)
+
+        {
+
+            ErrorMessage = "Error occurred while fetching or saving weather data.";
+
+        }
+
+    }
+
+
+
+    private async Task AddToFavorites(string cityName)
+
+    {
+
+        var response = await Http.PostAsJsonAsync("api/weather/favorites", cityName);
+
+        if (response.IsSuccessStatusCode)
+
+        {
+
+            if (!FavoriteCities.Contains(cityName))
+
+            {
+
+                FavoriteCities.Add(cityName);
+
+            }
+
+        }
+
+        else
+
+        {
+
+            ErrorMessage = "Failed to add city to favorites.";
+
+        }
+
+    }
+}
