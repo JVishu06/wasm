@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using wasm;
-using wasm.Services;
+using wasm.Sevices;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
