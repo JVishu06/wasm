@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jvish\\Desktop\\WiseWork\\WeatherApplicationwithJWTAuthentication\\wasm\\wasm.csproj": {}
+    "E:\\VISHWA\\WeatherApplicationwithJWTAuthentication\\wasm\\wasm.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jvish\\Desktop\\WiseWork\\WeatherApplicationwithJWTAuthentication\\wasm\\wasm.csproj": {
+    "E:\\VISHWA\\WeatherApplicationwithJWTAuthentication\\wasm\\wasm.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jvish\\Desktop\\WiseWork\\WeatherApplicationwithJWTAuthentication\\wasm\\wasm.csproj",
+        "projectUniqueName": "E:\\VISHWA\\WeatherApplicationwithJWTAuthentication\\wasm\\wasm.csproj",
         "projectName": "wasm",
-        "projectPath": "C:\\Users\\jvish\\Desktop\\WiseWork\\WeatherApplicationwithJWTAuthentication\\wasm\\wasm.csproj",
-        "packagesPath": "C:\\Users\\jvish\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jvish\\Desktop\\WiseWork\\WeatherApplicationwithJWTAuthentication\\wasm\\obj\\",
+        "projectPath": "E:\\VISHWA\\WeatherApplicationwithJWTAuthentication\\wasm\\wasm.csproj",
+        "packagesPath": "C:\\Users\\iQube\\.nuget\\packages\\",
+        "outputPath": "E:\\VISHWA\\WeatherApplicationwithJWTAuthentication\\wasm\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\jvish\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\iQube\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -43,8 +39,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -80,7 +75,7 @@
             "Microsoft.NET.Sdk.WebAssembly.Pack": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.0, )",
+              "version": "[8.0.11, )",
               "autoReferenced": true
             },
             "System.Text.Json": {
@@ -110,7 +105,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
