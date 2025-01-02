@@ -32,12 +32,12 @@ builder.Services.AddScoped(sp => new HttpClient
 builder.Services.AddScoped<WeatherService>();
 
 // Custom HTTP message handler for authentication
-builder.Services.AddTransient<CustomHttpHandler>();
+builder.Services.AddTransient<CutomHttpHandler>();
 
 // Register HTTP client for authentication
 builder.Services.AddHttpClient("Auth", client =>
 {
     client.BaseAddress = new Uri(backendUrl);
-}).AddHttpMessageHandler<CustomHttpHandler>();
+}).AddHttpMessageHandler<CutomHttpHandler>();
 
 await builder.Build().RunAsync();
