@@ -19,7 +19,7 @@ builder.Services.AddScoped<WeatherService>();
 builder.Services.AddBlazoredLocalStorage();
 
 // Add Custom Authentication and HTTP Handler services
-builder.Services.AddTransient<CustomHttpHandler>();
+builder.Services.AddTransient<CutomHttpHandler>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped(sp => (IAccountManagement)sp.GetRequiredService<AuthenticationStateProvider>());
 
@@ -32,6 +32,6 @@ builder.Services.AddScoped(sp => new HttpClient
 
 // Add HTTP Client for authentication (if needed)
 builder.Services.AddHttpClient("Auth", opt => opt.BaseAddress = new Uri(backendUrl))
-    .AddHttpMessageHandler<CustomHttpHandler>();
+    .AddHttpMessageHandler<CutomHttpHandler>();
 
 await builder.Build().RunAsync();
