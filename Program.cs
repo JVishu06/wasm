@@ -7,37 +7,31 @@ using wasm.Sevices;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-// Add AuthorizationCore services
+// Add Authorization services
 builder.Services.AddAuthorizationCore();
 
-// Root components registration
+// Register Root Components
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Local Storage Service
+// Register WeatherService and LocalStorage services
+builder.Services.AddScoped<WeatherService>();
 builder.Services.AddBlazoredLocalStorage();
 
-// Custom authentication state provider
+// Add Custom Authentication and HTTP Handler services
+builder.Services.AddTransient<CutomHttpHandler>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped(sp => (IAccountManagement)sp.GetRequiredService<AuthenticationStateProvider>());
 
-// HTTP client configuration for backend API
+// Register HttpClient services
 var backendUrl = builder.Configuration["BackendUrl"] ?? "https://webapi-8j7b.onrender.com";
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri(backendUrl)
 });
 
-// WeatherService registration
-builder.Services.AddScoped<WeatherService>();
-
-// Custom HTTP message handler for authentication
-builder.Services.AddTransient<CutomHttpHandler>();
-
-// Register HTTP client for authentication
-builder.Services.AddHttpClient("Auth", client =>
-{
-    client.BaseAddress = new Uri(backendUrl);
-}).AddHttpMessageHandler<CutomHttpHandler>();
+// Add HTTP Client for authentication (if needed)
+builder.Services.AddHttpClient("Auth", opt => opt.BaseAddress = new Uri(backendUrl))
+    .AddHttpMessageHandler<CutomHttpHandler>();
 
 await builder.Build().RunAsync();
