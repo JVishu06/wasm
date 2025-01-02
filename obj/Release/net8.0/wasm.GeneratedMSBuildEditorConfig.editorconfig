@@ -13,51 +13,51 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = browser
 build_property.RootNamespace = wasm
 build_property.RootNamespace = wasm
-build_property.ProjectDir = C:\Users\jvish\Desktop\WiseWork\WeatherApplicationwithJWTAuthentication\wasm\
+build_property.ProjectDir = E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = false
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\jvish\Desktop\WiseWork\WeatherApplicationwithJWTAuthentication\wasm
+build_property.MSBuildProjectDirectory = E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/App.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/App.razor]
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/Component/Account/Login.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/Component/Account/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50XEFjY291bnRcTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/Component/Account/Logout.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/Component/Account/Logout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50XEFjY291bnRcTG9nb3V0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/Component/Account/Register.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/Component/Account/Register.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50XEFjY291bnRcUmVnaXN0ZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/Pages/Counter.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/Pages/Home.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/Pages/Weather.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/Pages/Weather.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcV2VhdGhlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/_Imports.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/Layout/MainLayout.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-cykcrbnhwa
 
-[C:/Users/jvish/Desktop/WiseWork/WeatherApplicationwithJWTAuthentication/wasm/Layout/NavMenu.razor]
+[E:/VISHWA/WeatherApplicationwithJWTAuthentication/wasm/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE5hdk1lbnUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-f8fla3ww5l

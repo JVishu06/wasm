@@ -1063,3 +1063,13 @@ C:\Users\jvish\Desktop\WiseWork\WeatherApplicationwithJWTAuthentication\wasm\obj
 C:\Users\jvish\Desktop\WiseWork\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\compressed\yjiyj33frx.gz
 C:\Users\jvish\Desktop\WiseWork\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\compressed\pk4dpv3l9f.gz
 C:\Users\jvish\Desktop\WiseWork\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\compressed\hq8rqf1989.gz
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.csproj.AssemblyReference.cache
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.GeneratedMSBuildEditorConfig.editorconfig
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.AssemblyInfoInputs.cache
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.AssemblyInfo.cs
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.csproj.CoreCompileInputs.cache
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.MvcApplicationPartsAssemblyInfo.cache
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.sourcelink.json
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.dll
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\refint\wasm.dll
+E:\VISHWA\WeatherApplicationwithJWTAuthentication\wasm\obj\Release\net8.0\wasm.pdb
