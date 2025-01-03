@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("wasm")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a89ccc1cf13d521e11a16a2e1c14a401e87e073d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ab7f4ab719bd8fd1c2590ea36b0e3ae5d7c1a497")]
 [assembly: System.Reflection.AssemblyProductAttribute("wasm")]
 [assembly: System.Reflection.AssemblyTitleAttribute("wasm")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

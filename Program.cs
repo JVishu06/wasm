@@ -1,9 +1,9 @@
+using wasm;
+using wasm.Sevices;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using wasm;
-using wasm.Sevices;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -23,15 +23,20 @@ builder.Services.AddTransient<CutomHttpHandler>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped(sp => (IAccountManagement)sp.GetRequiredService<AuthenticationStateProvider>());
 
-// Register HttpClient services
-var backendUrl = builder.Configuration["BackendUrl"] ?? "https://webapi-8j7b.onrender.com"; // Ensure this matches the WebAPI deployment
+// Register HttpClient services with Render API URL
+// Use a dynamic base address for HttpClient
+var baseAddress = builder.HostEnvironment.IsProduction()
+    ? "https://webapi-8j7b.onrender.com" // Production Render API
+    : "https://webapi-8j7b.onrender.com";        // Local Development API
+
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri(backendUrl)
+    BaseAddress = new Uri(baseAddress)
 });
 
-// Add HTTP Client for authentication
-builder.Services.AddHttpClient("Auth", opt => opt.BaseAddress = new Uri(backendUrl))
+// Add HTTP Client for authentication (if needed)
+builder.Services.AddHttpClient("Auth", opt => opt.BaseAddress =
+    new Uri("https://webapi-8j7b.onrender.com")) // Use the Render API URL for authentication as well
     .AddHttpMessageHandler<CutomHttpHandler>();
 
 await builder.Build().RunAsync();

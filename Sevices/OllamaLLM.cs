@@ -1,8 +1,9 @@
+
 using System;
-using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace OllamaChatbot.Services
 {
@@ -19,7 +20,7 @@ namespace OllamaChatbot.Services
                 ? throw new ArgumentException("Model cannot be null or empty.", nameof(model))
                 : model;
 
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:11434/") };
+            _httpClient = new HttpClient();
         }
 
         // Method to set a custom prompt (fine-tuning the prompt for each request)
@@ -34,48 +35,55 @@ namespace OllamaChatbot.Services
 
         public async Task<string> InvokeAsync(string? input)
         {
-            // Ensure input is not null
             if (string.IsNullOrWhiteSpace(input))
             {
                 throw new ArgumentException("Input cannot be null or empty.", nameof(input));
             }
 
-            // Combine the custom prompt (if set) with the input prompt
             string prompt = string.IsNullOrEmpty(_customPrompt) ? input : $"{_customPrompt} {input}";
 
-            var request = new { model = _model, prompt };
-            var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
-
-            // Use HttpResponseMessage to capture streamed responses
-            using var response = await _httpClient.PostAsync("api/generate", content);
-            response.EnsureSuccessStatusCode(); // Throw if not a success code.
-
-            var result = new StringBuilder(); // Use StringBuilder for performance
-
-            using (var reader = new System.IO.StreamReader(await response.Content.ReadAsStreamAsync()))
+            var requestContent = new
             {
-                string? line;
-                while ((line = await reader.ReadLineAsync()) != null)
+                messages = new[]
                 {
-                    try
-                    {
-                        // Deserialize each JSON object separately
-                        using var jsonDoc = JsonSerializer.Deserialize<JsonDocument>(line);
-                        if (jsonDoc != null && jsonDoc.RootElement.GetProperty("done").GetBoolean())
-                        {
-                            break; // Stop when we hit the final response
-                        }
+            new { role = "user", content = prompt }
+        },
+                model = _model
+            };
 
-                        result.Append(jsonDoc?.RootElement.GetProperty("response").GetString());
-                    }
-                    catch (JsonException ex)
-                    {
-                        Console.WriteLine($"Deserialization error: {ex.Message}");
-                    }
+            var apiKey = "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"; // Use secure storage for your API key
+            var requestJson = JsonSerializer.Serialize(requestContent);
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "https://api.groq.com/openai/v1/chat/completions")
+            {
+                Content = new StringContent(requestJson)
+            };
+
+            requestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            try
+            {
+                var response = await _httpClient.SendAsync(requestMessage);
+                response.EnsureSuccessStatusCode();
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonSerializer.Deserialize<JsonDocument>(responseContent);
+
+                if (jsonResponse != null && jsonResponse.RootElement.TryGetProperty("choices", out var choices))
+                {
+                    var message = choices[0].GetProperty("message").GetProperty("content").GetString();
+                    return message ?? "No response from the model.";
                 }
-            }
 
-            return result.ToString(); // Return the final result as a string
+                return "Unexpected response format from Groq API.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error invoking Groq API: {ex.Message}");
+                return $"Error invoking Groq API: {ex.Message}";
+            }
         }
+
     }
 }

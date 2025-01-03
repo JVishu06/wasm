@@ -64,7 +64,7 @@
 
             {
                 <tr>
-                    <td class="city-column">
+                    <td class="city-column, cityname-table">
                         <button class="favorite-button" @onclick="() => AddToFavorites(weather.Name)">
                             ⭐
                         </button>
@@ -272,7 +272,7 @@
 
 
 
-                    if (WeatherDataList.Count > 4)
+                    if (WeatherDataList.Count > 10)
 
                     {
 
@@ -381,26 +381,19 @@
 
 
     private async Task SendMessage()
-
     {
-
         if (!string.IsNullOrEmpty(userInput))
-
         {
+            var llm = new OllamaChatbot.Services.OllamaLLM("llama3-8b-8192"); // Use the Groq model name
 
-            var llm = new OllamaChatbot.Services.OllamaLLM("qwen2.5:0.5b");
-
-
-            llm.SetCustomPrompt("You are a chatbot for Weatherverse, a company focused on weather data analytics provides real-time weather data for the given city name. Below are the key details about the company that should guide your responses: Company Name: Weatherverse, Founder & CEO: Vishwa, Key Weather Metrics of the weatherverse: Temperature (°C), Humidity (%), Pressure (hPa), weatherverse Company is located in Bangalore and weatherverse Headquarters in California, US, Founded Year: 2024, Revenue Increase: US$391.04 billion (FY 2024). Use this information when answering questions about the company, its leadership, location, revenue, or its key weather metrics. Respond clearly and concisely, providing accurate details from the information above.answer in few words");
-
+            llm.SetCustomPrompt("You are a chatbot for Weatherverse, a company focused on weather data analytics. Provide concise and accurate answers based on the given company information.");
 
             response = await llm.InvokeAsync(userInput);
 
             userInput = string.Empty;
-
         }
-
     }
+
 }
 
 
@@ -447,6 +440,9 @@
         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     }
 
+    .cityname-table{
+        text-align: left;
+    }
     button {
         padding: 10px 18px;
         font-size: 14px;
@@ -499,11 +495,13 @@
         padding: 10px 12px;
         border: 1px solid black;
         color: white;
+        text-align: center;
     }
 
     th {
         background-color: black;
         color: white;
+        text-align: center;
     }
 
     tr:hover {
