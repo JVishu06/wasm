@@ -23,20 +23,18 @@ builder.Services.AddTransient<CutomHttpHandler>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped(sp => (IAccountManagement)sp.GetRequiredService<AuthenticationStateProvider>());
 
-// Register HttpClient services with Render API URL
-// Use a dynamic base address for HttpClient
-var baseAddress = builder.HostEnvironment.IsProduction()
-    ? "https://webapi-8j7b.onrender.com" // Production Render API
-    : "https://webapi-8j7b.onrender.com";        // Local Development API
+// Configure HttpClient for API communication
+var apiUrl = builder.HostEnvironment.IsProduction()
+    ? "https://webapi-8j7b.onrender.com" 
+    : "http://localhost:5000"; 
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri(baseAddress)
+    BaseAddress = new Uri(apiUrl)
 });
 
-// Add HTTP Client for authentication (if needed)
-builder.Services.AddHttpClient("Auth", opt => opt.BaseAddress =
-    new Uri("https://webapi-8j7b.onrender.com")) // Use the Render API URL for authentication as well
+builder.Services.AddHttpClient("Auth", client => client.BaseAddress = new Uri(apiUrl))
     .AddHttpMessageHandler<CutomHttpHandler>();
 
+// Build and run the application
 await builder.Build().RunAsync();

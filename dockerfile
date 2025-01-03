@@ -1,24 +1,30 @@
-# Use the official .NET SDK image to build the application
+# Stage 1: Build the WASM application
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
 
-# Copy the project files and restore dependencies
-COPY *.csproj . 
-RUN dotnet restore
+# Copy the WASM project file and restore dependencies
+COPY ["wasm.csproj", "./"]
+RUN dotnet restore "./wasm.csproj"
 
-# Copy the remaining source code and build the application
-COPY . . 
-RUN dotnet publish -c Release -o /out
+# Copy the entire project and build it
+COPY . .
+RUN dotnet build "./wasm.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Use the official ASP.NET Core runtime image to run the application
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
-WORKDIR /app
+# Publish the WASM app to a dist folder
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./wasm.csproj" -c $BUILD_CONFIGURATION -o /app/dist /p:UseAppHost=false
 
-# Copy the published files from the build stage
-COPY --from=build /out .
+# Stage 2: Serve the WASM app using NGINX for production
+FROM nginx:alpine AS final
+WORKDIR /usr/share/nginx/html
 
-# Expose the port for the app
+# Copy the published artifacts from the publish stage
+COPY --from=publish /app/dist .
+
+# Expose the HTTP port
 EXPOSE 80
 
-# Serve the Blazor WebAssembly app using ASP.NET Core server (Kestrel)
-ENTRYPOINT ["dotnet", "wasm.dll"]
+# Use NGINX as the entry point
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
