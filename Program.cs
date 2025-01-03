@@ -24,13 +24,13 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStat
 builder.Services.AddScoped(sp => (IAccountManagement)sp.GetRequiredService<AuthenticationStateProvider>());
 
 // Register HttpClient services
-var backendUrl = builder.Configuration["BackendUrl"] ?? "https://webapi-8j7b.onrender.com";
+var backendUrl = builder.Configuration["BackendUrl"] ?? "https://webapi-8j7b.onrender.com"; // Ensure this matches the WebAPI deployment
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri(backendUrl)
 });
 
-// Add HTTP Client for authentication (if needed)
+// Add HTTP Client for authentication
 builder.Services.AddHttpClient("Auth", opt => opt.BaseAddress = new Uri(backendUrl))
     .AddHttpMessageHandler<CutomHttpHandler>();
 
