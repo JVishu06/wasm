@@ -3,22 +3,20 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copy the project files and restore dependencies
-COPY *.csproj ./
+COPY *.csproj .
 RUN dotnet restore
 
 # Copy the remaining source code and build the application
-COPY . ./
+COPY . .
 RUN dotnet publish -c Release -o /out
 
-# Use the official NGINX image to serve the app
-FROM nginx:alpine
-WORKDIR /usr/share/nginx/html
+# Use the official ASP.NET Core runtime image to run the application
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /out .
 
-# Copy the published app files to the NGINX directory
-COPY --from=build /out/wwwroot .
-
-# Expose port 80
+# Expose the port that the application listens on
 EXPOSE 80
 
-# Start NGINX
-CMD ["nginx", "-g", "daemon off;"]
+# Set the entry point for the container
+ENTRYPOINT ["dotnet", "wasm.dll"]
